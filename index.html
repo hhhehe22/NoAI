@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No-AI 탐구 검색</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'Inter', 'sans-serif'],
+          },
+          boxShadow: {
+            'google': '0 1px 6px rgba(32, 33, 36, 0.16)',
+            'google-hover': '0 2px 12px rgba(32, 33, 36, 0.22)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .search-box:focus-within {
+      box-shadow: 0 2px 12px rgba(32, 33, 36, 0.22);
+      border-color: #d1d5db;
+    }
+  </style>
+</head>
+<body class="bg-[#ffffff] text-slate-800 min-h-screen flex flex-col justify-between selection:bg-blue-100 selection:text-blue-700">
+
+  <!-- 헤더 영역 (미니멀 배지 & 출처) -->
+  <header class="w-full px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+        Web Only Filter (No-AI)
+      </span>
+    </div>
+
+    <!-- 출처: 인선샘 표기 -->
+    <div class="text-xs font-medium text-slate-400 tracking-tight">
+      출처 : <span class="text-slate-600 font-semibold">인선샘</span>
+    </div>
+  </header>
+
+  <!-- 메인 본문 (구글 스타일의 중앙 집중 레이아웃) -->
+  <main class="flex-1 flex flex-col items-center justify-center px-4 -mt-10 sm:-mt-14 max-w-3xl mx-auto w-full">
+    
+    <!-- 타이틀 & 부제목 영역 (너비를 타이틀 폭에 정확히 맞춤) -->
+    <div class="inline-flex flex-col items-center mb-8 sm:mb-9 max-w-fit mx-auto text-center">
+      <!-- 구글 스타일 폰트 & 심볼 컬러 믹스 -->
+      <h1 id="titleHeader" class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight select-none inline-block">
+        <span class="text-[#4285F4]">No</span><span class="text-[#EA4335]">-</span><span class="text-[#FBBC05]">AI</span>
+        <span class="text-[#202124] ml-2">탐구 검색</span>
+      </h1>
+
+      <!-- 제목 폭에 정확하게 맞춰진 더 작고 섬세한 부제목 -->
+      <p class="mt-2.5 text-xs sm:text-[13px] text-slate-500 font-normal leading-relaxed w-full text-center tracking-tight break-keep">
+        AI 요약에 의존하지 않고 1차 출처를 직접 비교·분석하는 공간입니다
+      </p>
+    </div>
+
+    <!-- 검색창 영역 -->
+    <div class="w-full max-w-2xl">
+      <form id="searchForm" action="https://www.google.com/search" method="GET" class="w-full">
+        <!-- 구글 Web 탭 강제 파라미터: AI 개요 배제 -->
+        <input type="hidden" name="udm" value="14">
+        
+        <div class="search-box relative flex items-center w-full bg-white rounded-full border border-slate-200/90 shadow-google transition-all duration-200 hover:shadow-google-hover">
+          <!-- 돋보기 아이콘 -->
+          <div class="pl-5 pr-3 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+
+          <!-- 검색어 입력창 -->
+          <input 
+            type="text" 
+            name="q" 
+            id="searchInput"
+            class="w-full py-4 text-base sm:text-lg text-slate-800 placeholder-slate-400 bg-transparent outline-none pr-12 font-normal" 
+            placeholder="조사할 키워드를 입력하세요" 
+            autocomplete="off" 
+            spellcheck="false"
+            required
+            autofocus
+          >
+
+          <!-- 입력 텍스트 지우기 버튼 -->
+          <button 
+            type="button" 
+            id="clearBtn"
+            onclick="clearSearchInput()"
+            class="hidden absolute right-16 p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+            title="입력 지우기"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <!-- 검색 버튼 -->
+          <button 
+            type="submit" 
+            class="mr-2 p-2.5 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition duration-150 flex items-center justify-center shadow-sm"
+            title="검색"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- 하단 푸터 (교육적 목적 배포 안내 및 무단 배포 방지 문구) -->
+  <footer class="w-full py-5 px-6 border-t border-slate-100 text-center space-y-1">
+    <p class="text-[12px] sm:text-[13px] text-slate-500 font-medium">
+      출처: 인선샘 &bull; 학생 스스로 원문을 찾고 검증하는 No-AI 탐구 검색
+    </p>
+    <p class="text-[11px] text-slate-400 leading-relaxed max-w-xl mx-auto">
+      본 서비스는 교육적인 목적으로 제작·배포되었습니다. 교육 현장에서의 자유로운 활용은 환영하나, 무단 재배포 및 상업적 이용은 삼가주시기 바랍니다.
+    </p>
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // 검색창 입력 상태에 따라 삭제 버튼 토글
+    searchInput.addEventListener('input', function() {
+      if (this.value.trim().length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+    });
+
+    // 텍스트 초기화 함수
+    function clearSearchInput() {
+      searchInput.value = '';
+      clearBtn.classList.add('hidden');
+      searchInput.focus();
+    }
+  </script>
+</body>
+</html>
